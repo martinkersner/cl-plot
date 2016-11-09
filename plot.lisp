@@ -99,3 +99,12 @@
   (push 
     (concatenate-strings (list "set arrow from" X-start "," Y-start "to" X-end "," Y-end nohead))
     (get-commands fig)))
+
+;;; XLABEL
+(defgeneric xlabel (fig label)
+  (:documentation ""))
+
+(defmethod xlabel ((fig figure) label)
+  (push
+    (concatenate 'string "set xlabel \"" label "\"")
+    (get-commands fig)))
