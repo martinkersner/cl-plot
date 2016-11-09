@@ -12,8 +12,8 @@
 (defparameter *shell* "bash")
 
 ;;; TODO dont add delimiter at the last position
-(defun concatenate-strings (str-lst &optional (complete ""))
-  (let* ((delim " ")
+(defun concatenate-strings (str-lst &optional (complete "") (delim " "))
+  (let* (;(delim " ")
          (item-tmp (car str-lst))
          (item (if (stringp item-tmp)
                   item-tmp
@@ -46,11 +46,13 @@
                       :if-does-not-exist :create)))
   
     ;; create temporary file with GNU plot commands
-    ;; demo
-    (write-line "#!/usr/bin/env bash" stream)
     (write-line "cat << EOF | gnuplot -p" stream)
-    ;(write-line "splot sin(x*y/20)" stream)
-    (write-line (concatenate-strings (get-commands fig)) stream)
+
+    ;; printing commands
+    (mapcar #'(lambda (cmd)
+                (write-line (concatenate-strings (list cmd)) stream))
+            (get-commands fig))
+
     (write-line "EOF" stream)
   
     ;; close file
