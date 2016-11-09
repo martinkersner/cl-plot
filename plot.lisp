@@ -29,11 +29,11 @@
 
 ;;; class for plotting
 (defclass figure ()
-  ((pt    :accessor set-pt)
-   (ps    :accessor set-ps)
-   (nokey :accessor set-nokey)
-   (circles :accessor set-circles)
-   (points :accessor set-points)
+  ((pt    :accessor set-pt) ; TODO
+   (ps    :accessor set-ps) ; TODO
+   (nokey :accessor set-nokey) ; TODO
+   (circles :accessor set-circles) ;TODO
+   (points :accessor set-points) ;TODO
    (commands :accessor get-commands
              :initform nil)
    (temporary-files :accessor get-temporary-files
@@ -92,10 +92,10 @@
   (close stream)))
 
 ;;; ARROW
-(defgeneric arrow (fig X-start Y-start X-end Y-end)
+(defgeneric arrow (fig X-start Y-start X-end Y-end &optional nohead)
   (:documentation ""))
 
-(defmethod arrow ((fig figure) X-start Y-start X-end Y-end)
+(defmethod arrow ((fig figure) X-start Y-start X-end Y-end &optional nohead)
   (push 
-    (concatenate-strings (list "set arrow from" X-start "," Y-start "to" X-end "," Y-end "nohead"))
+    (concatenate-strings (list "set arrow from" X-start "," Y-start "to" X-end "," Y-end nohead))
     (get-commands fig)))

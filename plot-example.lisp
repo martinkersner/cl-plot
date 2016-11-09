@@ -15,5 +15,5 @@
 
 (defparameter *fig* (make-instance 'figure))
 (scatter *fig* *dataframe*)
-(arrow *fig* 0 0 10 10)
+(arrow *fig* 0 0 10 10 "nohead")
 (show *fig*)
