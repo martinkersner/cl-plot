@@ -17,7 +17,9 @@
           :initform 7)
    (ps    :accessor get-ps
           :initform 2)
-   (nokey :accessor set-nokey) ; TODO
+   (nokey :accessor get-nokey
+          :initarg :nokey
+          :initform nil)
    (circles :accessor set-circles) ;TODO
    (points :accessor set-points) ;TODO
    (commands :accessor get-commands
@@ -33,7 +35,6 @@
     (get-commands fig)
     (list (concatenate-strings cmd ""))))
 
-
 (defgeneric show (fig)
   (:documentation "Display plot."))
 
@@ -46,6 +47,11 @@
   
     ;; create temporary file with GNU plot commands
     (write-line "cat << EOF | gnuplot -p" stream)
+
+    ;; setup commands
+    ;; nokey
+    (if (get-nokey fig)
+      (write-line (gen-nokey fig) stream))
 
     ;; printing commands
     (mapcar #'(lambda (cmd)
@@ -137,6 +143,10 @@
 (defmethod nokey ((fig figure))
   (add-command fig
                "set nokey"))
+
+;;; TODO integrate with nokey
+(defmethod gen-nokey ((fig figure))
+  "set nokey")
 
 ;;; General method for setting range of axis.
 (defgeneric figure-range (fig axis range)
