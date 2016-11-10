@@ -146,3 +146,11 @@
 (defmethod title ((fig figure) label)
   (add-command fig
                "set title \"" label "\""))
+
+;;; NOKEY
+(defgeneric nokey (fig)
+  (:documentation "Block legend"))
+
+(defmethod nokey ((fig figure))
+  (add-command fig
+               "set nokey"))
