@@ -7,9 +7,7 @@
 ;;; 2D scatterplot
 ;;; plot line
 ;;; 3D scatterplot
-;;; create temporary files /tmp directory
 
-(defparameter *output-file* "out") 
 (defparameter *shell* "bash")
 
 ;;; TODO dont add delimiter at the last position
@@ -26,6 +24,20 @@
       (concatenate 'string complete item delim))
     
     complete)))
+
+;;; http://www.codecodex.com/wiki/Generate_a_random_password_or_random_string#Common_Lisp
+(defun random-string (length)
+  (with-output-to-string (stream)
+    (let ((*print-base* 36))
+      (loop repeat length do (princ (random 36) stream)))))
+
+;;; Generate path to file with randomly generated name
+;;; Expect to work on Linux
+(defun get-random-filename (&optional (string-length 5))
+  (concatenate 'string
+    "/tmp/"
+    (write-to-string (get-universal-time))
+    (random-string string-length)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defgeneric add-command (fig &rest cmd)
@@ -52,7 +64,8 @@
   (:documentation ""))
 
 (defmethod show ((fig figure))
-  (let ((stream (open *output-file* 
+  (let* ((cmd-filename (get-random-filename))
+         (stream (open cmd-filename
                       :direction :output 
                       :if-exists :overwrite
                       :if-does-not-exist :create)))
@@ -71,7 +84,7 @@
     (close stream)
   
     ;; plot graph
-    (ext::shell (concatenate-strings (list *shell* *output-file*)))
+    (ext::shell (concatenate-strings (list *shell* cmd-filename)))
   
     ;; remove from temporary data files
     (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
@@ -85,7 +98,7 @@
   (:documentation ""))
 
 (defmethod scatter ((fig figure) df)
-  (let* ((filename "scatter-data.csv")
+  (let* ((filename (get-random-filename))
          (stream (open filename
                       :direction :output 
                       :if-exists :overwrite
