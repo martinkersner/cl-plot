@@ -4,8 +4,7 @@
 ;;;; Plot data using GNU plot.
 ;;;
 ;;; TODO
-;;; 2D scatterplot
-;;; plot line
+;;; better way to build commands
 ;;; 3D scatterplot
 
 (defparameter *shell* "bash")
@@ -97,10 +96,10 @@
     ))
 
 ;;; SCATTER PLOT
-(defgeneric scatter (fig df cols)
+(defgeneric scatter (fig df cols extra)
   (:documentation ""))
 
-(defmethod scatter ((fig figure) df cols)
+(defmethod scatter ((fig figure) df cols extra)
   (let* ((filename (get-random-filename))
          (stream (open filename
                       :direction :output 
@@ -110,7 +109,12 @@
     (mapcar #'(lambda (row) (write-line (concatenate-strings row) stream)) df)
 
     (add-command fig
-                 "plot " "\"" filename "\"" " using "(concatenate-strings cols ":")" with points pt " (get-pt fig) " ps " (get-ps fig))
+                 "plot "
+                 "\"" filename "\""
+                 " using "
+                 (concatenate-strings cols ":")
+                 " with points pt " (get-pt fig) " ps " (get-ps fig)
+                 " " extra)
 
     (push filename (get-temporary-files fig))
 
