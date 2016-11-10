@@ -115,3 +115,11 @@
 (defmethod xlabel ((fig figure) label)
   (add-command fig
                "set xlabel \"" label "\""))
+
+;;; YLABEL
+(defgeneric ylabel (fig label)
+  (:documentation "Print label for Y axis"))
+
+(defmethod ylabel ((fig figure) label)
+  (add-command fig
+               "set ylabel \"" label "\""))
