@@ -132,19 +132,24 @@
   (add-command fig
                "set nokey"))
 
+;;; General method for setting range of axis.
+(defgeneric figure-range (fig axis range)
+  (:documentation "Adjust range of figure"))
+
+(defmethod figure-range (fig axis range)
+  (add-command fig
+    "set " (format nil "~(~a~)" axis) "range [" (concatenate-strings range ":") "]"))
+
 ;;; XRANGE
-;;; TODO unify with method for Y range
 (defgeneric xrange (fig range)
   (:documentation "Adjust range of X axis"))
 
 (defmethod xrange ((fig figure) range)
-  (add-command fig
-               "set xrange [" (concatenate-strings range ":") "]"))
+  (figure-range fig 'x range))
 
 ;;; YRANGE
 (defgeneric yrange (fig range)
   (:documentation "Adjust range of Y axis"))
 
 (defmethod yrange ((fig figure) range)
-  (add-command fig
-               "set yrange [" (concatenate-strings range ":") "]"))
+  (figure-range fig 'y range))
