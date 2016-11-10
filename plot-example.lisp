@@ -14,8 +14,7 @@
     (1  34)))
 
 (defparameter *fig* (make-instance 'figure))
-;(xlabel *fig* "Deflection (meters)")
-(scatter *fig* *dataframe*)
-(arrow   *fig* 0 0 10 10 "nohead")
 (xlabel  *fig* "text")
+(arrow   *fig* 0 0 10 10 "nohead")
+(scatter *fig* *dataframe*)
 (show    *fig*)

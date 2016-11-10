@@ -27,6 +27,8 @@
     
     complete)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;; class for plotting
 (defclass figure ()
   ((pt    :accessor set-pt) ; TODO
@@ -35,7 +37,7 @@
    (circles :accessor set-circles) ;TODO
    (points :accessor set-points) ;TODO
    (commands :accessor get-commands
-             :initform nil)
+             :initform (list ""))
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
 
@@ -83,9 +85,9 @@
 
     (mapcar #'(lambda (row) (write-line (concatenate-strings row) stream)) df)
 
-    (push 
-      (concatenate-strings (list "plot" (concatenate 'string "\"" filename "\"") "using 1:2 with points pt 7 ps 2"))
-      (get-commands fig))
+    (nconc
+      (get-commands fig)
+      (list (concatenate-strings (list "plot" (concatenate 'string "\"" filename "\"") "using 1:2 with points pt 7 ps 2"))))
 
     (push filename (get-temporary-files fig))
 
@@ -96,15 +98,16 @@
   (:documentation ""))
 
 (defmethod arrow ((fig figure) X-start Y-start X-end Y-end &optional nohead)
-  (push 
-    (concatenate-strings (list "set arrow from" X-start "," Y-start "to" X-end "," Y-end nohead))
-    (get-commands fig)))
+  (nconc
+    (get-commands fig)
+    (list (concatenate-strings (list "set arrow from" X-start "," Y-start "to" X-end "," Y-end nohead)))))
 
 ;;; XLABEL
 (defgeneric xlabel (fig label)
   (:documentation ""))
 
 (defmethod xlabel ((fig figure) label)
-  (push
-    (concatenate 'string "set xlabel \"" label "\"")
-    (get-commands fig)))
+  (nconc
+    (get-commands fig)
+    (list (concatenate 'string "set xlabel \"" label "\""))
+    ))
