@@ -82,7 +82,7 @@
 
     (add-command fig
                  "plot "
-                 "\"" filename "\""
+                 (quote-string filename)
                  " using "
                  (concatenate-strings cols ":")
                  " with points pt " (get-pt fig) " ps " (get-ps fig)
@@ -106,7 +106,7 @@
 
 (defmethod xlabel ((fig figure) label)
   (add-command fig
-               "set xlabel \"" label "\""))
+               "set xlabel " (quote-string label)))
 
 ;;; YLABEL
 (defgeneric ylabel (fig label)
@@ -114,7 +114,7 @@
 
 (defmethod ylabel ((fig figure) label)
   (add-command fig
-               "set ylabel \"" label "\""))
+               "set ylabel " (quote-string label)))
 
 ;;; TITLE
 (defgeneric title (fig label)
@@ -122,7 +122,7 @@
 
 (defmethod title ((fig figure) label)
   (add-command fig
-               "set title \"" label "\""))
+               "set title " (quote-string label)))
 
 ;;; NOKEY
 (defgeneric nokey (fig)

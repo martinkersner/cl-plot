@@ -1,7 +1,7 @@
 ;;;; Martin Kersner, m.kersner@gmail.com
 ;;;; 2016/11/10
 ;;;;
-;;;; Auxiliary funstions for plotting.
+;;;; Auxiliary functions for plotting.
 
 ;;; Concatenate string given in list and join them with given delimiter.
 (defun concatenate-strings (str-lst &optional  (delim " ") (complete ""))
@@ -24,10 +24,14 @@
     (let ((*print-base* 36))
       (loop repeat length do (princ (random 36) stream)))))
 
-;;; Generate path to file with randomly generated name
-;;; Expect to work on Linux
+;;; Generate path to file with randomly generated name.
+;;; Expect to work on Linux.
 (defun get-random-filename (&optional (string-length 5))
   (concatenate 'string
     "/tmp/"
     (write-to-string (get-universal-time))
     (random-string string-length)))
+
+;;; Quote string.
+(defun quote-string (str)
+  (concatenate 'string "\"" str "\""))
