@@ -14,8 +14,7 @@
 
 ;;; TODO dont add delimiter at the last position
 (defun concatenate-strings (str-lst &optional  (delim " ") (complete ""))
-  (let* (;(delim " ")
-         (item-tmp (car str-lst))
+  (let* ((item-tmp (car str-lst))
          (item (if (stringp item-tmp)
                   item-tmp
                   (write-to-string item-tmp))))
@@ -75,10 +74,10 @@
     (ext::shell (concatenate-strings (list *shell* *output-file*)))
   
     ;; remove from temporary data files
-    ;(mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
+    (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
 
     ;; remove temporary command file
-    ;(delete-file stream)
+    (delete-file stream)
     ))
 
 ;;; SCATTER PLOT
@@ -94,9 +93,8 @@
 
     (mapcar #'(lambda (row) (write-line (concatenate-strings row) stream)) df)
 
-    (nconc
-      (get-commands fig)
-      (list (concatenate-strings (list "plot" (concatenate 'string "\"" filename "\"") "using 1:2 with points pt 7 ps 2"))))
+    (add-command fig
+                 "plot " "\"" filename "\"" " using 1:2 with points pt 7 ps 2")
 
     (push filename (get-temporary-files fig))
 
@@ -107,9 +105,8 @@
   (:documentation ""))
 
 (defmethod arrow ((fig figure) X-start Y-start X-end Y-end &optional nohead)
-  (nconc
-    (get-commands fig)
-    (list (concatenate-strings (list "set arrow from" X-start "," Y-start "to" X-end "," Y-end nohead)))))
+  (add-command fig
+               "set arrow from " X-start "," Y-start " to " X-end "," Y-end " " nohead))
 
 ;;; XLABEL
 (defgeneric xlabel (fig label)
