@@ -9,8 +9,7 @@
 
 (load "utils")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; class for plotting
+;;; FIGURE
 (defclass figure ()
   ((shell :accessor get-shell
           :initform "bash")
@@ -27,7 +26,7 @@
                     :initform nil)))
 
 (defgeneric add-command (fig &rest cmd)
-  (:documentation ""))
+  (:documentation "Add commands to internal variable commands."))
 
 (defmethod add-command ((fig figure) &rest cmd)
   (nconc
@@ -36,7 +35,7 @@
 
 
 (defgeneric show (fig)
-  (:documentation ""))
+  (:documentation "Display plot."))
 
 (defmethod show ((fig figure))
   (let* ((cmd-filename (get-random-filename))
@@ -95,7 +94,7 @@
 
 ;;; ARROW
 (defgeneric arrow (fig X-start Y-start X-end Y-end &optional nohead)
-  (:documentation ""))
+  (:documentation "Print arrow."))
 
 (defmethod arrow ((fig figure) X-start Y-start X-end Y-end &optional nohead)
   (add-command fig
