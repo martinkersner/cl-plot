@@ -136,3 +136,11 @@
 (defmethod ylabel ((fig figure) label)
   (add-command fig
                "set ylabel \"" label "\""))
+
+;;; TITLE
+(defgeneric title (fig label)
+  (:documentation "Print label for Y axis"))
+
+(defmethod title ((fig figure) label)
+  (add-command fig
+               "set title \"" label "\""))
