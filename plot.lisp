@@ -96,10 +96,10 @@
     ))
 
 ;;; SCATTER PLOT
-(defgeneric scatter (fig df cols extra)
+(defgeneric scatter (fig df cols &optional extra)
   (:documentation ""))
 
-(defmethod scatter ((fig figure) df cols extra)
+(defmethod scatter ((fig figure) df cols &optional (extra ""))
   (let* ((filename (get-random-filename))
          (stream (open filename
                       :direction :output 
