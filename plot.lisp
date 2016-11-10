@@ -50,8 +50,10 @@
 
 ;;; class for plotting
 (defclass figure ()
-  ((pt    :accessor set-pt) ; TODO
-   (ps    :accessor set-ps) ; TODO
+  ((pt    :accessor get-pt
+          :initform 7)
+   (ps    :accessor get-ps
+          :initform 2)
    (nokey :accessor set-nokey) ; TODO
    (circles :accessor set-circles) ;TODO
    (points :accessor set-points) ;TODO
@@ -107,7 +109,7 @@
     (mapcar #'(lambda (row) (write-line (concatenate-strings row) stream)) df)
 
     (add-command fig
-                 "plot " "\"" filename "\"" " using 1:2 with points pt 7 ps 2")
+                 "plot " "\"" filename "\"" " using 1:2 with points pt " (get-pt fig) " ps " (get-ps fig))
 
     (push filename (get-temporary-files fig))
 
