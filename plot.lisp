@@ -159,3 +159,20 @@
 (defmethod nokey ((fig figure))
   (add-command fig
                "set nokey"))
+
+;;; XRANGE
+;;; TODO unify with method for Y range
+(defgeneric xrange (fig range)
+  (:documentation "Adjust range of X axis"))
+
+(defmethod xrange ((fig figure) range)
+  (add-command fig
+               "set xrange [" (concatenate-strings range ":") "]"))
+
+;;; YRANGE
+(defgeneric yrange (fig range)
+  (:documentation "Adjust range of Y axis"))
+
+(defmethod yrange ((fig figure) range)
+  (add-command fig
+               "set yrange [" (concatenate-strings range ":") "]"))
