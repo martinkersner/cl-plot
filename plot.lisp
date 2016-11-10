@@ -7,36 +7,8 @@
 ;;; better way to build commands
 ;;; 3D scatterplot
 
+(load "utils")
 (defparameter *shell* "bash")
-
-;;; TODO dont add delimiter at the last position
-(defun concatenate-strings (str-lst &optional  (delim " ") (complete ""))
-  (let* ((item-tmp (car str-lst))
-         (item (if (stringp item-tmp)
-                  item-tmp
-                  (write-to-string item-tmp))))
-
-    (if str-lst
-      (concatenate-strings
-        (cdr str-lst)
-        (if (= (length (cdr str-lst)) 1) "" delim) ; no delim after last string
-        (concatenate 'string complete item delim))
-
-    complete)))
-
-;;; http://www.codecodex.com/wiki/Generate_a_random_password_or_random_string#Common_Lisp
-(defun random-string (length)
-  (with-output-to-string (stream)
-    (let ((*print-base* 36))
-      (loop repeat length do (princ (random 36) stream)))))
-
-;;; Generate path to file with randomly generated name
-;;; Expect to work on Linux
-(defun get-random-filename (&optional (string-length 5))
-  (concatenate 'string
-    "/tmp/"
-    (write-to-string (get-universal-time))
-    (random-string string-length)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; class for plotting
