@@ -17,12 +17,12 @@
                   item-tmp
                   (write-to-string item-tmp))))
 
-  (if str-lst
-    (concatenate-strings
-      (cdr str-lst)
-      delim
-      (concatenate 'string complete item delim))
-    
+    (if str-lst
+      (concatenate-strings
+        (cdr str-lst)
+        (if (= (length (cdr str-lst)) 1) "" delim) ; no delim after last string
+        (concatenate 'string complete item delim))
+
     complete)))
 
 ;;; http://www.codecodex.com/wiki/Generate_a_random_password_or_random_string#Common_Lisp
@@ -40,14 +40,6 @@
     (random-string string-length)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defgeneric add-command (fig &rest cmd)
-  (:documentation ""))
-
-(defmethod add-command ((fig figure) &rest cmd)
-  (nconc
-    (get-commands fig)
-    (list (concatenate-strings cmd ""))))
-
 ;;; class for plotting
 (defclass figure ()
   ((pt    :accessor get-pt
@@ -61,6 +53,15 @@
              :initform (list ""))
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
+
+(defgeneric add-command (fig &rest cmd)
+  (:documentation ""))
+
+(defmethod add-command ((fig figure) &rest cmd)
+  (nconc
+    (get-commands fig)
+    (list (concatenate-strings cmd ""))))
+
 
 (defgeneric show (fig)
   (:documentation ""))
@@ -96,10 +97,10 @@
     ))
 
 ;;; SCATTER PLOT
-(defgeneric scatter (fig df)
+(defgeneric scatter (fig df cols)
   (:documentation ""))
 
-(defmethod scatter ((fig figure) df)
+(defmethod scatter ((fig figure) df cols)
   (let* ((filename (get-random-filename))
          (stream (open filename
                       :direction :output 
@@ -109,7 +110,7 @@
     (mapcar #'(lambda (row) (write-line (concatenate-strings row) stream)) df)
 
     (add-command fig
-                 "plot " "\"" filename "\"" " using 1:2 with points pt " (get-pt fig) " ps " (get-ps fig))
+                 "plot " "\"" filename "\"" " using "(concatenate-strings cols ":")" with points pt " (get-pt fig) " ps " (get-ps fig))
 
     (push filename (get-temporary-files fig))
 
