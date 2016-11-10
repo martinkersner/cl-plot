@@ -13,7 +13,7 @@
 (defparameter *shell* "bash")
 
 ;;; TODO dont add delimiter at the last position
-(defun concatenate-strings (str-lst &optional (complete "") (delim " "))
+(defun concatenate-strings (str-lst &optional  (delim " ") (complete ""))
   (let* (;(delim " ")
          (item-tmp (car str-lst))
          (item (if (stringp item-tmp)
@@ -23,11 +23,19 @@
   (if str-lst
     (concatenate-strings
       (cdr str-lst)
+      delim
       (concatenate 'string complete item delim))
     
     complete)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defgeneric add-command (fig &rest cmd)
+  (:documentation ""))
+
+(defmethod add-command ((fig figure) &rest cmd)
+  (nconc
+    (get-commands fig)
+    (list (concatenate-strings cmd ""))))
 
 ;;; class for plotting
 (defclass figure ()
@@ -67,10 +75,11 @@
     (ext::shell (concatenate-strings (list *shell* *output-file*)))
   
     ;; remove from temporary data files
-    (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
+    ;(mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
 
     ;; remove temporary command file
-    (delete-file stream)))
+    ;(delete-file stream)
+    ))
 
 ;;; SCATTER PLOT
 (defgeneric scatter (fig df)
@@ -104,10 +113,8 @@
 
 ;;; XLABEL
 (defgeneric xlabel (fig label)
-  (:documentation ""))
+  (:documentation "Print label for X axis"))
 
 (defmethod xlabel ((fig figure) label)
-  (nconc
-    (get-commands fig)
-    (list (concatenate 'string "set xlabel \"" label "\""))
-    ))
+  (add-command fig
+               "set xlabel \"" label "\""))
