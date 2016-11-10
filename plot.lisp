@@ -100,25 +100,31 @@
   (add-command fig
                "set arrow from " X-start "," Y-start " to " X-end "," Y-end " " nohead))
 
+;;; General method for setting label of axis.
+(defgeneric figure-label (fig axis label)
+  (:documentation "Print label of given axis."))
+
+(defmethod figure-label (fig axis label)
+  (add-command fig
+               "set " (format nil "~(~a~)" axis) "label " (quote-string label)))
+
 ;;; XLABEL
 (defgeneric xlabel (fig label)
-  (:documentation "Print label for X axis"))
+  (:documentation "Print label for X axis."))
 
 (defmethod xlabel ((fig figure) label)
-  (add-command fig
-               "set xlabel " (quote-string label)))
+  (figure-label fig 'x label))
 
 ;;; YLABEL
 (defgeneric ylabel (fig label)
-  (:documentation "Print label for Y axis"))
+  (:documentation "Print label for Y axis."))
 
 (defmethod ylabel ((fig figure) label)
-  (add-command fig
-               "set ylabel " (quote-string label)))
+  (figure-label fig 'y label))
 
 ;;; TITLE
 (defgeneric title (fig label)
-  (:documentation "Print label for Y axis"))
+  (:documentation "Print label for Y axis."))
 
 (defmethod title ((fig figure) label)
   (add-command fig
@@ -126,7 +132,7 @@
 
 ;;; NOKEY
 (defgeneric nokey (fig)
-  (:documentation "Block legend"))
+  (:documentation "Block legend."))
 
 (defmethod nokey ((fig figure))
   (add-command fig
@@ -134,7 +140,7 @@
 
 ;;; General method for setting range of axis.
 (defgeneric figure-range (fig axis range)
-  (:documentation "Adjust range of figure"))
+  (:documentation "Adjust range of figure."))
 
 (defmethod figure-range (fig axis range)
   (add-command fig
@@ -142,14 +148,14 @@
 
 ;;; XRANGE
 (defgeneric xrange (fig range)
-  (:documentation "Adjust range of X axis"))
+  (:documentation "Adjust range of X axis."))
 
 (defmethod xrange ((fig figure) range)
   (figure-range fig 'x range))
 
 ;;; YRANGE
 (defgeneric yrange (fig range)
-  (:documentation "Adjust range of Y axis"))
+  (:documentation "Adjust range of Y axis."))
 
 (defmethod yrange ((fig figure) range)
   (figure-range fig 'y range))
