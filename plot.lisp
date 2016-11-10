@@ -8,12 +8,13 @@
 ;;; 3D scatterplot
 
 (load "utils")
-(defparameter *shell* "bash")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; class for plotting
 (defclass figure ()
-  ((pt    :accessor get-pt
+  ((shell :accessor get-shell
+          :initform "bash")
+   (pt    :accessor get-pt
           :initform 7)
    (ps    :accessor get-ps
           :initform 2)
@@ -58,7 +59,7 @@
     (close stream)
   
     ;; plot graph
-    (ext::shell (concatenate-strings (list *shell* cmd-filename)))
+    (ext::shell (concatenate-strings (list (get-shell fig) cmd-filename)))
   
     ;; remove from temporary data files
     (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
