@@ -74,10 +74,10 @@
     ))
 
 ;;; SCATTER PLOT
-(defgeneric scatter (fig df cols &optional extra)
+(defgeneric scatter (fig df cols &key :with); &optional extra)
   (:documentation ""))
 
-(defmethod scatter ((fig figure) df cols &optional (extra ""))
+(defmethod scatter ((fig figure) df cols &key ((:with with-type) nil)); &optional (extra ""))
   (let* ((filename (get-random-filename))
          (stream (open filename
                       :direction :output 
@@ -91,12 +91,19 @@
                  (quote-string filename)
                  " using "
                  (concatenate-strings cols ":")
-                 " with points pt " (get-pt fig) " ps " (get-ps fig)
-                 " " extra)
+                 (build-with with-type)
+                 "pt " (get-pt fig) " ps " (get-ps fig)
+                 );" " extra)
 
     (push filename (get-temporary-files fig))
 
   (close stream)))
+
+;;; WITH Building block for scatter plot.
+(defun build-with (type)
+ (if type
+  (concatenate 'string " with " (format nil "~(~a~)" type) " ")
+  " "))
 
 ;;; ARROW
 (defgeneric arrow (fig X-start Y-start X-end Y-end &optional nohead)
