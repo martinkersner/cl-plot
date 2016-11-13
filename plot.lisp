@@ -143,13 +143,9 @@
   (add-command fig
                "set title " (quote-string label)))
 
-;;; NOKEY
-(defgeneric nokey (fig)
+;; NOKEY
+(defgeneric gen-nokey (fig)
   (:documentation "Block legend."))
-
-(defmethod nokey ((fig figure))
-  (add-command fig
-               "set nokey"))
 
 ;;; TODO integrate with nokey
 (defmethod gen-nokey ((fig figure))
