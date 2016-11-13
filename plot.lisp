@@ -20,6 +20,9 @@
    (nokey :accessor get-nokey
           :initarg :nokey
           :initform nil)
+   (palette :accessor get-palette
+            :initarg :palette
+            :initform nil)
    (circles :accessor set-circles) ;TODO
    (points :accessor set-points) ;TODO
    (commands :accessor get-commands
@@ -52,6 +55,10 @@
     ;; nokey
     (if (get-nokey fig)
       (write-line (gen-nokey fig) stream))
+
+    ;; palette
+    (if (get-palette fig)
+      (write-line (gen-palette fig) stream))
 
     ;; printing commands
     (mapcar #'(lambda (cmd)
@@ -147,9 +154,15 @@
 (defgeneric gen-nokey (fig)
   (:documentation "Block legend."))
 
-;;; TODO integrate with nokey
 (defmethod gen-nokey ((fig figure))
   "set nokey")
+
+;; PALETTE
+(defgeneric gen-palette (fig)
+  (:documentation "Show palette on plot."))
+
+(defmethod gen-palette ((fig figure))
+  "show palette")
 
 ;;; General method for setting range of axis.
 (defgeneric figure-range (fig axis range)
