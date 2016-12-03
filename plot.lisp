@@ -4,7 +4,8 @@
 ;;;; Plot data using GNU plot.
 ;;;
 ;;; TODO
-;;; better way to build commands
+;;; clean code
+;;; better way to build commands!!
 ;;; 3D scatterplot
 
 (in-package :lispplot)
@@ -81,10 +82,16 @@
     ))
 
 ;;; SCATTER PLOT
-(defgeneric scatter (fig df &key :with cols); &optional extra)
+(defgeneric scatter (fig df &key :with cols palette plot-type fill solid-border lt pt ps)
   (:documentation ""))
 
-(defmethod scatter ((fig figure) df &key ((:with with-type) nil) (cols nil)); &optional (extra ""))
+(defmethod scatter ((fig figure) df &key ((:with with-type) nil)
+                                 (cols nil)
+                                 (palette nil)
+                                 (plot-type 'plot)
+                                 (fill nil)
+                                 (solid-border)
+                                 (lt nil) (pt nil) (ps nil))
   (let* ((filename (get-random-filename))
          (stream (open filename
                       :direction :output 
@@ -94,14 +101,18 @@
     (mapcar #'(lambda (row) (write-line (concatenate-strings row) stream)) df)
 
     (add-command fig
-                 "plot "
+                 (gen-scatter-type plot-type) " "
                  (quote-string filename)
                  " using "
-                 ;(concatenate-strings cols ":")
                  (scatter-build-cols cols df)
                  (build-with with-type)
-                 "pt " (get-pt fig) " ps " (get-ps fig)
-                 );" " extra)
+                 (if pt (concatenate 'string "pt " (format nil "~(~a~)" pt) " ") "")
+                 (if ps (concatenate 'string "ps " (format nil "~(~a~)" ps) " ") "")
+                 (if palette " palette " "")
+                 (if fill " fill " "")
+                 (if solid-border " solid border " "")
+                 (if lt (concatenate 'string "lt " (format nil "~(~a~)" lt)) "")
+                 )
 
     (push filename (get-temporary-files fig))
 
@@ -155,6 +166,11 @@
 (defmethod title ((fig figure) label)
   (add-command fig
                "set title " (quote-string label)))
+
+;; SCATTER TYPE: PLOT, REPLOT
+;; TODO sufficient?
+(defun gen-scatter-type (scatter-type)
+  (format nil "~(~a~)" scatter-type))
 
 ;; NOKEY
 (defgeneric gen-nokey (fig)
