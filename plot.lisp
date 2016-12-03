@@ -116,7 +116,7 @@
 (defun scatter-build-cols (cols df)
   (if cols
     (concatenate-strings cols ":")
-    (concatenate-strings (iota (length (first df))) ":")))
+    (concatenate-strings (iota (length (first df)) 1) ":")))
 
 ;;; ARROW
 (defgeneric arrow (fig X-start Y-start X-end Y-end &optional nohead)
