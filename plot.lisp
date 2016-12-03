@@ -7,7 +7,7 @@
 ;;; better way to build commands
 ;;; 3D scatterplot
 
-(load "utils")
+(in-package :lispplot)
 
 ;;; FIGURE
 (defclass figure ()

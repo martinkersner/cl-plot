@@ -3,7 +3,7 @@
 ;;;;
 ;;;; Example of plotting data using GNU plot.
 
-(load "plot")
+(in-package :lispplot)
 
 (defparameter *dataframe* 
   '((1  1)
@@ -16,5 +16,6 @@
 (defparameter *fig* (make-instance 'figure))
 (xlabel  *fig* "text")
 (arrow   *fig* 0 0 10 10 "nohead")
+;(scatter *fig* *dataframe* :cols '(1 2))
 (scatter *fig* *dataframe*)
 (show    *fig*)
