@@ -82,10 +82,11 @@
     ))
 
 ;;; SCATTER
-(defgeneric scatter (fig df &key :with cols palette plot-type fill solid-border lt pt ps)
+(defgeneric scatter (fig df &key with cols palette plot-type fill solid-border lt pt ps)
   (:documentation ""))
 
-(defmethod scatter ((fig figure) df &key ((:with with-type) nil)
+(defmethod scatter ((fig figure) df &key
+                                 (with nil)
                                  (cols nil)
                                  (palette nil)
                                  (plot-type 'plot)
@@ -101,11 +102,11 @@
     (mapcar #'(lambda (row) (write-line (concatenate-strings row) stream)) df)
 
     (add-command fig
-                 (gen-scatter-type plot-type) " "
+                 (gen-scatter-type plot-type)
                  (quote-string filename)
                  " using "
                  (gen-cols fig df cols)
-                 (gen-with fig with-type)
+                 (gen-with fig with)
                  (gen-pt fig pt)
                  (gen-ps fig ps)
                  (gen-palette-scatter fig palette)
@@ -119,12 +120,13 @@
   (close stream)))
 
 ;;; ARROW
-(defgeneric arrow (fig X-start Y-start X-end Y-end &optional nohead)
+(defgeneric arrow (fig X-start Y-start X-end Y-end &key nohead)
   (:documentation "Print arrow."))
 
-(defmethod arrow ((fig figure) X-start Y-start X-end Y-end &optional nohead)
+(defmethod arrow ((fig figure) X-start Y-start X-end Y-end &key (nohead t))
   (add-command fig
-               "set arrow from " X-start "," Y-start " to " X-end "," Y-end " " nohead))
+               "set arrow from" *space* X-start "," Y-start *space* "to" *space* X-end "," Y-end *space*
+               (gen-subcommand fig nohead "nohead")))
 
 ;;; XLABEL
 (defgeneric xlabel (fig label)
