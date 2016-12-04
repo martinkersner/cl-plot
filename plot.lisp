@@ -109,7 +109,7 @@
                  (gen-pt fig pt)
                  (gen-ps fig ps)
                  (gen-palette-scatter fig palette)
-                 (if fill " fill " "")
+                 (gen-fill fig fill)
                  (if solid-border " solid border " "")
                  (gen-lt fig lt)
                  )
@@ -244,7 +244,7 @@
 ;;; GEN-LT used for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
 (defgeneric gen-lt (fig val)
-  (:documentation "Generate part of 'plot' command related to 'ps' attribute."))
+  (:documentation "Generate part of 'plot' command related to 'lt' attribute."))
 
 ;;; Generate " lt [0-9]+ " if given value is not null
 (defmethod gen-lt ((fig figure) val)
@@ -260,4 +260,14 @@
 (defmethod gen-palette-scatter ((fig figure) palette)
   (if palette
     (concatenate 'string *space* "palette" *space*)
+    *empty*))
+
+;;; GEN-FILL used for SCATTER
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-fill (fig fill)
+  (:documentation "Generate string fill for 'plot' command."))
+
+(defmethod gen-fill ((fig figure) fill)
+  (if fill
+    (concatenate 'string *space* "fill" *space*)
     *empty*))
