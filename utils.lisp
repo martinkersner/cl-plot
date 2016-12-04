@@ -42,3 +42,7 @@
 ;;; Return a list of n consecutive integers, by default starting at 0.
 (defun iota (n &optional (start-at 0))
   (if (<= n 0) nil (cons start-at (iota (- n 1) (+ start-at 1)))))
+
+;;; Convert any given value to string.
+(defun to-str (val)
+  (format nil "~(~a~)" val))

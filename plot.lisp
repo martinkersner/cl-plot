@@ -10,6 +10,9 @@
 
 (in-package :lispplot)
 
+(defparameter *space* " ")
+(defparameter *empty* "")
+
 ;;; FIGURE
 (defclass figure ()
   ((shell :accessor get-shell
@@ -31,14 +34,9 @@
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
 
-(defgeneric add-command (fig &rest cmd)
-  (:documentation "Add commands to internal variable commands."))
+;;; PRIVATE METHODS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod add-command ((fig figure) &rest cmd)
-  (nconc
-    (get-commands fig)
-    (list (concatenate-strings cmd ""))))
-
+;;; SHOW
 (defgeneric show (fig)
   (:documentation "Display plot."))
 
@@ -54,10 +52,12 @@
 
     ;; setup commands
     ;; nokey
+    ;; TODO unify with get-palette
     (if (get-nokey fig)
       (write-line (gen-nokey fig) stream))
 
     ;; palette
+    ;; TODO unify with get-nokey
     (if (get-palette fig)
       (write-line (gen-palette fig) stream))
 
@@ -81,7 +81,7 @@
     (delete-file stream)
     ))
 
-;;; SCATTER PLOT
+;;; SCATTER
 (defgeneric scatter (fig df &key :with cols palette plot-type fill solid-border lt pt ps)
   (:documentation ""))
 
@@ -106,7 +106,8 @@
                  " using "
                  (scatter-build-cols cols df)
                  (build-with with-type)
-                 (if pt (concatenate 'string "pt " (format nil "~(~a~)" pt) " ") "")
+                 (gen-pt fig pt)
+                 ;(if pt (concatenate 'string "pt " (format nil "~(~a~)" pt) " ") "")
                  (if ps (concatenate 'string "ps " (format nil "~(~a~)" ps) " ") "")
                  (if palette " palette " "")
                  (if fill " fill " "")
@@ -118,17 +119,6 @@
 
   (close stream)))
 
-;;; WITH Building block for scatter plot.
-(defun build-with (type)
- (if type
-  (concatenate 'string " with " (format nil "~(~a~)" type) " ")
-  " "))
-
-(defun scatter-build-cols (cols df)
-  (if cols
-    (concatenate-strings cols ":")
-    (concatenate-strings (iota (length (first df)) 1) ":")))
-
 ;;; ARROW
 (defgeneric arrow (fig X-start Y-start X-end Y-end &optional nohead)
   (:documentation "Print arrow."))
@@ -136,14 +126,6 @@
 (defmethod arrow ((fig figure) X-start Y-start X-end Y-end &optional nohead)
   (add-command fig
                "set arrow from " X-start "," Y-start " to " X-end "," Y-end " " nohead))
-
-;;; General method for setting label of axis.
-(defgeneric figure-label (fig axis label)
-  (:documentation "Print label of given axis."))
-
-(defmethod figure-label (fig axis label)
-  (add-command fig
-               "set " (format nil "~(~a~)" axis) "label " (quote-string label)))
 
 ;;; XLABEL
 (defgeneric xlabel (fig label)
@@ -167,19 +149,44 @@
   (add-command fig
                "set title " (quote-string label)))
 
-;; SCATTER TYPE: PLOT, REPLOT
-;; TODO sufficient?
+;;; XRANGE
+(defgeneric xrange (fig range)
+  (:documentation "Adjust range of X axis."))
+
+(defmethod xrange ((fig figure) range)
+  (figure-range fig 'x range))
+
+;;; YRANGE
+(defgeneric yrange (fig range)
+  (:documentation "Adjust range of Y axis."))
+
+(defmethod yrange ((fig figure) range)
+  (figure-range fig 'y range))
+
+;;; PRIVATE METHODS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; ADD-COMMAND
+(defgeneric add-command (fig &rest cmd)
+  (:documentation "Add commands to internal variable commands."))
+
+(defmethod add-command ((fig figure) &rest cmd)
+  (nconc
+    (get-commands fig)
+    (list (concatenate-strings cmd ""))))
+
+;;; SCATTER TYPE: PLOT, REPLOT
+;;; TODO sufficient?
 (defun gen-scatter-type (scatter-type)
   (format nil "~(~a~)" scatter-type))
 
-;; NOKEY
+;;; NOKEY
 (defgeneric gen-nokey (fig)
   (:documentation "Block legend."))
 
 (defmethod gen-nokey ((fig figure))
   "set nokey")
 
-;; PALETTE
+;;; PALETTE
 (defgeneric gen-palette (fig)
   (:documentation "Show palette on plot."))
 
@@ -194,16 +201,31 @@
   (add-command fig
     "set " (format nil "~(~a~)" axis) "range [" (concatenate-strings range ":") "]"))
 
-;;; XRANGE
-(defgeneric xrange (fig range)
-  (:documentation "Adjust range of X axis."))
+;;; WITH Building block for scatter plot.
+(defun build-with (type)
+ (if type
+  (concatenate 'string " with " (format nil "~(~a~)" type) " ")
+  " "))
 
-(defmethod xrange ((fig figure) range)
-  (figure-range fig 'x range))
+(defun scatter-build-cols (cols df)
+  (if cols
+    (concatenate-strings cols ":")
+    (concatenate-strings (iota (length (first df)) 1) ":")))
 
-;;; YRANGE
-(defgeneric yrange (fig range)
-  (:documentation "Adjust range of Y axis."))
+;;; General method for setting label of axis.
+(defgeneric figure-label (fig axis label)
+  (:documentation "Print label of given axis."))
 
-(defmethod yrange ((fig figure) range)
-  (figure-range fig 'y range))
+(defmethod figure-label (fig axis label)
+  (add-command fig
+               "set " (format nil "~(~a~)" axis) "label " (quote-string label)))
+
+;;; GEN-PT used for SCATTER
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-pt (fig val)
+  (:documentation "Generate part of 'plot' command related to 'pt' attribute."))
+
+(defmethod gen-pt ((fig figure) val)
+  (if val
+    (concatenate 'string *space* "pt" *space* (to-str val) *space*)
+    *empty*))
