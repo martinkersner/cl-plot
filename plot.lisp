@@ -59,7 +59,7 @@
     ;; palette
     ;; TODO unify with get-nokey
     (if (get-palette fig)
-      (write-line (gen-palette fig) stream))
+      (write-line (gen-palette-fig fig) stream))
 
     ;; printing commands
     (mapcar #'(lambda (cmd)
@@ -108,7 +108,7 @@
                  (build-with with-type)
                  (gen-pt fig pt)
                  (gen-ps fig ps)
-                 (if palette " palette " "")
+                 (gen-palette-scatter fig palette)
                  (if fill " fill " "")
                  (if solid-border " solid border " "")
                  (if lt (concatenate 'string "lt " (format nil "~(~a~)" lt)) "")
@@ -185,11 +185,11 @@
 (defmethod gen-nokey ((fig figure))
   "set nokey")
 
-;;; PALETTE
-(defgeneric gen-palette (fig)
+;;; PALETTE for FIGURE
+(defgeneric gen-palette-fig (fig)
   (:documentation "Show palette on plot."))
 
-(defmethod gen-palette ((fig figure))
+(defmethod gen-palette-fig ((fig figure))
   "show palette")
 
 ;;; General method for setting range of axis.
@@ -239,4 +239,14 @@
 (defmethod gen-ps ((fig figure) val)
   (if val
     (concatenate 'string *space* "ps" *space* (to-str val) *space*)
+    *empty*))
+
+;;; PALETTE for SCATTER
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-palette-scatter (fig palette)
+  (:documentation "Use palette to display values of points in scatter plot."))
+
+(defmethod gen-palette-scatter ((fig figure) palette)
+  (if palette
+    (concatenate 'string *space* "palette" *space*)
     *empty*))
