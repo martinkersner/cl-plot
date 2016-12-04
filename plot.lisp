@@ -107,8 +107,7 @@
                  (scatter-build-cols cols df)
                  (build-with with-type)
                  (gen-pt fig pt)
-                 ;(if pt (concatenate 'string "pt " (format nil "~(~a~)" pt) " ") "")
-                 (if ps (concatenate 'string "ps " (format nil "~(~a~)" ps) " ") "")
+                 (gen-ps fig ps)
                  (if palette " palette " "")
                  (if fill " fill " "")
                  (if solid-border " solid border " "")
@@ -225,7 +224,19 @@
 (defgeneric gen-pt (fig val)
   (:documentation "Generate part of 'plot' command related to 'pt' attribute."))
 
+;;; Generate " pt [0-9]+ " if given value is not null
 (defmethod gen-pt ((fig figure) val)
   (if val
     (concatenate 'string *space* "pt" *space* (to-str val) *space*)
+    *empty*))
+
+;;; GEN-PS used for SCATTER
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-ps (fig val)
+  (:documentation "Generate part of 'plot' command related to 'ps' attribute."))
+
+;;; Generate " ps [0-9]+ " if given value is not null
+(defmethod gen-ps ((fig figure) val)
+  (if val
+    (concatenate 'string *space* "ps" *space* (to-str val) *space*)
     *empty*))
