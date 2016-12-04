@@ -176,7 +176,7 @@
 ;;; SCATTER TYPE: PLOT, REPLOT
 ;;; TODO sufficient?
 (defun gen-scatter-type (scatter-type)
-  (format nil "~(~a~)" scatter-type))
+  (concatenate-strings (list *space* (to-str scatter-type) *space*)))
 
 ;;; NOKEY
 (defgeneric gen-nokey (fig)
