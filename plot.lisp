@@ -110,7 +110,7 @@
                  (gen-ps fig ps)
                  (gen-palette-scatter fig palette)
                  (gen-fill fig fill)
-                 (if solid-border " solid border " "")
+                 (gen-solid-border fig solid-border)
                  (gen-lt fig lt)
                  )
 
@@ -265,9 +265,21 @@
 ;;; GEN-FILL used for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
 (defgeneric gen-fill (fig fill)
-  (:documentation "Generate string fill for 'plot' command."))
+  (:documentation "Generate string 'fill' for 'plot' command."))
 
+;;; Generate " fill " if given value is not null
 (defmethod gen-fill ((fig figure) fill)
   (if fill
     (concatenate 'string *space* "fill" *space*)
+    *empty*))
+
+;;; GEN-SOLID-BORDER used for SCATTER
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-solid-border (fig solid-border)
+  (:documentation "Generate string 'solid border' for 'plot' command."))
+
+;;; Generate " solid border " if given value is not null
+(defmethod gen-solid-border ((fig figure) solid-border)
+  (if solid-border
+    (concatenate 'string *space* "solid border" *space*)
     *empty*))
