@@ -4,8 +4,8 @@
 ;;;; Plot data using GNU plot.
 ;;;
 ;;; TODO
-;;; clean code
 ;;; better way to build commands!!
+;;; check with GNU plot documentation
 ;;; 3D scatterplot
 
 (in-package :lispplot)
@@ -105,7 +105,7 @@
                  (quote-string filename)
                  " using "
                  (scatter-build-cols cols df)
-                 (build-with with-type)
+                 (gen-with fig with-type)
                  (gen-pt fig pt)
                  (gen-ps fig ps)
                  (gen-palette-scatter fig palette)
@@ -178,7 +178,7 @@
 (defun gen-scatter-type (scatter-type)
   (concatenate-strings (list *space* (to-str scatter-type) *space*)))
 
-;;; NOKEY
+;;; GEN-NOKEY for FIGURE
 (defgeneric gen-nokey (fig)
   (:documentation "Block legend."))
 
@@ -192,19 +192,22 @@
 (defmethod gen-palette-fig ((fig figure))
   "show palette")
 
+;;; FIGURE-RANGE
 ;;; General method for setting range of axis.
 (defgeneric figure-range (fig axis range)
   (:documentation "Adjust range of figure."))
 
 (defmethod figure-range (fig axis range)
   (add-command fig
-    "set " (format nil "~(~a~)" axis) "range [" (concatenate-strings range ":") "]"))
+    "set" *space* (to-str axis) "range [" (concatenate-strings range ":") "]"))
 
-;;; WITH Building block for scatter plot.
-(defun build-with (type)
- (if type
-  (concatenate 'string " with " (format nil "~(~a~)" type) " ")
-  " "))
+;;; GEN-WITH
+(defgeneric gen-with (fig with-type)
+  (:documentation "Set building blocks for scatter plot."))
+
+(defmethod gen-with ((fig figure) with-type)
+  (gen-subcommand fig with-type
+                  *space* "with" *space* (to-str with-type) *space*))
 
 (defun scatter-build-cols (cols df)
   (if cols
