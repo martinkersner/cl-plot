@@ -104,7 +104,7 @@
                  (gen-scatter-type plot-type) " "
                  (quote-string filename)
                  " using "
-                 (scatter-build-cols cols df)
+                 (gen-cols fig df cols)
                  (gen-with fig with-type)
                  (gen-pt fig pt)
                  (gen-ps fig ps)
@@ -202,6 +202,7 @@
     "set" *space* (to-str axis) "range [" (concatenate-strings range ":") "]"))
 
 ;;; GEN-WITH
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
 (defgeneric gen-with (fig with-type)
   (:documentation "Set building blocks for scatter plot."))
 
@@ -209,12 +210,19 @@
   (gen-subcommand fig with-type
                   *space* "with" *space* (to-str with-type) *space*))
 
-(defun scatter-build-cols (cols df)
+;;; GEN-COLS used for SCATTER
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-cols (fig df cols)
+  (:documentation ""))
+
+(defmethod gen-cols ((fig figure) df cols)
   (if cols
     (concatenate-strings cols ":")
     (concatenate-strings (iota (length (first df)) 1) ":")))
 
+;;; FIGURE-LABEL
 ;;; General method for setting label of axis.
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
 (defgeneric figure-label (fig axis label)
   (:documentation "Print label of given axis."))
 
