@@ -111,7 +111,7 @@
                  (gen-palette-scatter fig palette)
                  (if fill " fill " "")
                  (if solid-border " solid border " "")
-                 (if lt (concatenate 'string "lt " (format nil "~(~a~)" lt)) "")
+                 (gen-lt fig lt)
                  )
 
     (push filename (get-temporary-files fig))
@@ -239,6 +239,17 @@
 (defmethod gen-ps ((fig figure) val)
   (if val
     (concatenate 'string *space* "ps" *space* (to-str val) *space*)
+    *empty*))
+
+;;; GEN-LT used for SCATTER
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-lt (fig val)
+  (:documentation "Generate part of 'plot' command related to 'ps' attribute."))
+
+;;; Generate " lt [0-9]+ " if given value is not null
+(defmethod gen-lt ((fig figure) val)
+  (if val
+    (concatenate 'string *space* "lt" *space* (to-str val) *space*)
     *empty*))
 
 ;;; PALETTE for SCATTER
