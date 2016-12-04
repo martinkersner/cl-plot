@@ -230,7 +230,7 @@
 
 (defmethod figure-label (fig axis label)
   (add-command fig
-               "set " (format nil "~(~a~)" axis) "label " (quote-string label)))
+               "set" *space* (to-str axis) "label" *space* (quote-string label)))
 
 ;;; GEN-SUBCOMMAND
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
