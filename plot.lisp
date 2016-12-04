@@ -219,6 +219,16 @@
   (add-command fig
                "set " (format nil "~(~a~)" axis) "label " (quote-string label)))
 
+;;; GEN-SUBCOMMAND
+;;; TODO keep as DEFGENERIC, DEFMETHOD?
+(defgeneric gen-subcommand (fig val &rest subcommand)
+  (:documentation "Auxiliary function for generating substring for commands."))
+
+(defmethod gen-subcommand ((fig figure) val &rest subcommand)
+  (if val
+    (concatenate-strings subcommand)
+    *empty*))
+
 ;;; GEN-PT used for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
 (defgeneric gen-pt (fig val)
@@ -226,9 +236,8 @@
 
 ;;; Generate " pt [0-9]+ " if given value is not null
 (defmethod gen-pt ((fig figure) val)
-  (if val
-    (concatenate 'string *space* "pt" *space* (to-str val) *space*)
-    *empty*))
+  (gen-subcommand fig val
+    *space* "pt" *space* (to-str val) *space*))
 
 ;;; GEN-PS used for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
@@ -237,9 +246,8 @@
 
 ;;; Generate " ps [0-9]+ " if given value is not null
 (defmethod gen-ps ((fig figure) val)
-  (if val
-    (concatenate 'string *space* "ps" *space* (to-str val) *space*)
-    *empty*))
+  (gen-subcommand fig val
+    *space* "ps" *space* (to-str val) *space*))
 
 ;;; GEN-LT used for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
@@ -248,9 +256,8 @@
 
 ;;; Generate " lt [0-9]+ " if given value is not null
 (defmethod gen-lt ((fig figure) val)
-  (if val
-    (concatenate 'string *space* "lt" *space* (to-str val) *space*)
-    *empty*))
+  (gen-subcommand fig val
+    *space* "lt" *space* (to-str val) *space*))
 
 ;;; PALETTE for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
@@ -258,9 +265,8 @@
   (:documentation "Use palette to display values of points in scatter plot."))
 
 (defmethod gen-palette-scatter ((fig figure) palette)
-  (if palette
-    (concatenate 'string *space* "palette" *space*)
-    *empty*))
+  (gen-subcommand fig palette
+    *space* "palette" *space*))
 
 ;;; GEN-FILL used for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
@@ -269,9 +275,8 @@
 
 ;;; Generate " fill " if given value is not null
 (defmethod gen-fill ((fig figure) fill)
-  (if fill
-    (concatenate 'string *space* "fill" *space*)
-    *empty*))
+  (gen-subcommand fig fill
+    *space* "fill" *space*))
 
 ;;; GEN-SOLID-BORDER used for SCATTER
 ;;; TODO keep as DEFGENERIC, DEFMETHOD?
@@ -280,6 +285,5 @@
 
 ;;; Generate " solid border " if given value is not null
 (defmethod gen-solid-border ((fig figure) solid-border)
-  (if solid-border
-    (concatenate 'string *space* "solid border" *space*)
-    *empty*))
+  (gen-subcommand fig solid-border
+    *space* "solid border" *space*))
