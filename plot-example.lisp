@@ -15,7 +15,7 @@
 
 (defparameter *fig* (make-instance 'figure))
 (xlabel  *fig* "text")
-(arrow   *fig* 0 0 10 10 "nohead")
+(arrow   *fig* 0 0 10 10 :nohead t)
 ;(scatter *fig* *dataframe* :cols '(1 2))
 (scatter *fig* *dataframe*)
 (show    *fig*)
