@@ -76,8 +76,7 @@
   (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
 
   ;; remove temporary command file
-  ;(delete-file (get-stream fig))
-  (princ (get-cmd-filename fig))
+  (delete-file (get-stream fig))
 )
 
 (defgeneric save (fig image-name &optional width height)
