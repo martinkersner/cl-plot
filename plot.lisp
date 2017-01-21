@@ -62,8 +62,14 @@
 (defmethod do-plotting ((fig figure))
   (build-commands fig)
   (close (get-stream fig))
+
+  ;; run gnu plot commands
   (ext::shell (concatenate-strings (list (get-shell fig) (get-cmd-filename fig))))
+
+  ;; remove from temporary data files
   (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
+
+  ;; remove temporary command file
   (delete-file (get-stream fig))
 )
 
@@ -99,45 +105,19 @@
   (:documentation "Display plot."))
 
 (defmethod show ((fig figure))
-  (let* ((cmd-filename (get-random-filename))
-         (stream (open cmd-filename
-                      :direction :output
-                      :if-exists :overwrite
-                      :if-does-not-exist :create)))
-  
-    ;; create temporary file with GNU plot commands
-    (write-line "cat << EOF | gnuplot -p" stream)
+  (initialize-plotting fig)
+  ;; setup commands
+  ;; nokey
+  ;; TODO unify with get-palette
+  (if (get-nokey fig)
+    (write-line (gen-nokey fig) (get-stream fig)))
 
-    ;; setup commands
-    ;; nokey
-    ;; TODO unify with get-palette
-    (if (get-nokey fig)
-      (write-line (gen-nokey fig) stream))
+  ;; palette
+  ;; TODO unify with get-nokey
+  (if (get-palette fig)
+    (write-line (gen-palette-fig fig) (get-stream fig)))
 
-    ;; palette
-    ;; TODO unify with get-nokey
-    (if (get-palette fig)
-      (write-line (gen-palette-fig fig) stream))
-
-    ;; printing commands
-    (mapcar #'(lambda (cmd)
-                (write-line (concatenate-strings (list cmd)) stream))
-            (get-commands fig))
-
-    (write-line "EOF" stream)
-  
-    ;; close file
-    (close stream)
-  
-    ;; plot graph
-    (ext::shell (concatenate-strings (list (get-shell fig) cmd-filename)))
-  
-    ;; remove from temporary data files
-    (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
-
-    ;; remove temporary command file
-    (delete-file stream)
-    ))
+  (do-plotting fig))
 
 ;;; SCATTER
 (defgeneric scatter (fig df &key with cols palette plot-type fill solid-border lt pt ps)
