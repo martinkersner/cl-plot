@@ -32,6 +32,10 @@
    (commands :accessor get-commands
              :initform (list ""))
    (stream :accessor get-stream)
+   (width :accessor get-width
+          :initform 640)
+   (height :accessor get-height
+          :initform 480)
    (cmd-filename :accessor get-cmd-filename)
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
@@ -73,22 +77,25 @@
   (delete-file (get-stream fig))
 )
 
-(defgeneric save (fig image-name width height)
+(defgeneric save (fig image-name &optional width height)
   (:documentation "Save a plot as an image."))
 
-(defmethod save ((fig figure) image-name width height)
-  (initialize-plotting fig)
+(defmethod save ((fig figure) image-name &optional width height)
+  (let ((w (if width width (get-width fig)))
+        (h (if height height (get-height fig))))
 
-  (write-line
-    (concatenate-strings (list "set term png size" ; TODO change term according to image extension
-                               (concatenate-strings (list width height) ",")))
-    (get-stream fig))
+    (initialize-plotting fig)
 
-  (write-line
-    (concatenate-strings (list "set output \"" image-name "\"") "")
-    (get-stream fig))
+    (write-line
+      (concatenate-strings (list "set term png size" ; TODO change term according to image extension
+                                 (concatenate-strings (list w h) ",")))
+      (get-stream fig))
 
-  (do-plotting fig))
+    (write-line
+      (concatenate-strings (list "set output \"" image-name "\"") "")
+      (get-stream fig))
+
+    (do-plotting fig)))
 
 (defgeneric build-commands (fig)
   (:documentation ""))

@@ -14,8 +14,21 @@
     (1  34)))
 
 (defparameter *fig* (make-instance 'figure))
+;set size 0.5 0.5
+;set png size 600, 400
+;set output "figure.png"
 (xlabel  *fig* "text")
-(arrow   *fig* 0 0 10 10 "nohead")
+(arrow   *fig* 0 0 10 10 :nohead t)
+;(xrange *fig* '(-5 5))
+;(yrange *fig* '(0 10))
 ;(scatter *fig* *dataframe* :cols '(1 2))
-(scatter *fig* *dataframe*)
-(show    *fig*)
+(scatter *fig* *dataframe*
+         ;:pt 7
+         ;:ps 2
+         :with "lines"
+         )
+
+;(show    *fig*)
+(save *fig* "fig.png" 600 400)
+;(save *fig* "fig.png")
+;(save *fig* "fig.png" 666)
