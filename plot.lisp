@@ -36,27 +36,31 @@
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
 
-(defun open-file-to-write ()
-  (let* ((filename (get-random-filename))
-         (stream (open filename
-                      :direction :output
-                      :if-exists :overwrite
-                      :if-does-not-exist :create)))
+(defgeneric setup-file-stream (fig)
+  (:documentation ""))
 
-    (values filename stream)))
+(defmethod setup-file-stream ((fig figure))
+  (setf (get-cmd-filename fig)
+        (get-random-filename))
+
+  (setf (get-stream fig)
+        (open (get-cmd-filename fig)
+              :direction :output
+              :if-exists :overwrite
+              :if-does-not-exist :create)))
 
 (defgeneric initialize-plotting (fig)
   (:documentation ""))
 
 (defmethod initialize-plotting ((fig figure))
+  (setup-file-stream fig)
   (write-line "cat << EOF | gnuplot -p" (get-stream fig)))
 
 (defgeneric do-plotting (fig)
   (:documentation ""))
 
 (defmethod do-plotting ((fig figure))
-  (build-commands (get-commands fig) (get-stream fig))
-  (write-line "EOF" (get-stream fig))
+  (build-commands fig)
   (close (get-stream fig))
   (ext::shell (concatenate-strings (list (get-shell fig) (get-cmd-filename fig))))
   (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
@@ -67,28 +71,28 @@
   (:documentation "Save a plot as an image."))
 
 (defmethod save ((fig figure) image-name width height)
-  (multiple-value-bind (filename stream) (open-file-to-write)
-    (setf (get-cmd-filename fig) filename)
-    (setf (get-stream fig) stream)
+  (initialize-plotting fig)
 
-    (initialize-plotting fig)
+  (write-line
+    (concatenate-strings (list "set term png size" ; TODO change term according to image extension
+                               (concatenate-strings (list width height) ",")))
+    (get-stream fig))
 
-    (write-line
-      (concatenate-strings (list "set term png size" ; TODO change term according to image extension
-                                 (concatenate-strings (list width height) ",")))
-      stream)
+  (write-line
+    (concatenate-strings (list "set output \"" image-name "\"") "")
+    (get-stream fig))
 
-    (write-line
-      (concatenate-strings (list "set output \"" image-name "\"") "")
-      stream)
+  (do-plotting fig))
 
-    (do-plotting fig))
-)
+(defgeneric build-commands (fig)
+  (:documentation ""))
 
-(defun build-commands (commands stream)
+(defmethod build-commands ((fig figure))
   (mapcar #'(lambda (cmd)
-              (write-line (concatenate-strings (list cmd)) stream))
-          commands))
+              (write-line (concatenate-strings (list cmd)) (get-stream fig)))
+          (get-commands fig))
+
+  (write-line "EOF" (get-stream fig)))
 
 ;;; SHOW
 (defgeneric show (fig)
