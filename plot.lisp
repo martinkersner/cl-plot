@@ -31,10 +31,51 @@
    (points :accessor set-points) ;TODO
    (commands :accessor get-commands
              :initform (list ""))
+   (stream :accessor get-stream)
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
 
 ;;; PRIVATE METHODS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun open-file-to-write ()
+  (let* ((filename (get-random-filename))
+         (stream (open filename
+                      :direction :output
+                      :if-exists :overwrite
+                      :if-does-not-exist :create)))
+
+    (values filename stream)))
+
+(defgeneric save (fig image-name width height)
+  (:documentation "Save a plot as an image."))
+
+(defmethod save ((fig figure) image-name width height)
+  (multiple-value-bind (filename stream) (open-file-to-write)
+
+    (write-line "cat << EOF | gnuplot -p" stream)
+
+    (write-line
+      (concatenate-strings (list "set term png size"
+                                 (concatenate-strings (list width height) ",")))
+      stream)
+
+    (write-line
+      (concatenate-strings (list "set output \"" image-name "\""))
+      stream)
+
+    (build-commands (get-commands fig) stream)
+
+    (write-line "EOF" stream)
+    (close stream)
+    (ext::shell (concatenate-strings (list (get-shell fig) filename)))
+    (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
+    (delete-file stream)
+    )
+)
+
+(defun build-commands (commands stream)
+  (mapcar #'(lambda (cmd)
+              (write-line (concatenate-strings (list cmd)) stream))
+          commands))
 
 ;;; SHOW
 (defgeneric show (fig)
@@ -43,7 +84,7 @@
 (defmethod show ((fig figure))
   (let* ((cmd-filename (get-random-filename))
          (stream (open cmd-filename
-                      :direction :output 
+                      :direction :output
                       :if-exists :overwrite
                       :if-does-not-exist :create)))
   
