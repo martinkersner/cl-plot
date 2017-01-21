@@ -22,19 +22,19 @@
    (ps    :accessor get-ps
           :initform 2)
    (nokey :accessor get-nokey
-          :initarg :nokey
-          :initform nil)
+          :initarg :nokey)
    (palette :accessor get-palette
-            :initarg :palette
-            :initform nil)
+            :initarg :palette)
    (circles :accessor set-circles) ;TODO
    (points :accessor set-points) ;TODO
    (commands :accessor get-commands
              :initform (list ""))
    (stream :accessor get-stream)
    (width :accessor get-width
+          :initarg :width
           :initform 640)
    (height :accessor get-height
+          :initarg :height
           :initform 480)
    (cmd-filename :accessor get-cmd-filename)
    (temporary-files :accessor get-temporary-files
@@ -58,7 +58,14 @@
 
 (defmethod initialize-plotting ((fig figure))
   (setup-file-stream fig)
-  (write-line "cat << EOF | gnuplot -p" (get-stream fig)))
+  (write-line "cat << EOF | gnuplot -p" (get-stream fig))
+
+  (if (get-nokey fig)
+    (write-line (gen-nokey fig) (get-stream fig)))
+
+  (if (get-palette fig)
+    (write-line (gen-palette-fig fig) (get-stream fig)))
+  )
 
 (defgeneric do-plotting (fig)
   (:documentation ""))
@@ -113,17 +120,6 @@
 
 (defmethod show ((fig figure))
   (initialize-plotting fig)
-  ;; setup commands
-  ;; nokey
-  ;; TODO unify with get-palette
-  (if (get-nokey fig)
-    (write-line (gen-nokey fig) (get-stream fig)))
-
-  ;; palette
-  ;; TODO unify with get-nokey
-  (if (get-palette fig)
-    (write-line (gen-palette-fig fig) (get-stream fig)))
-
   (do-plotting fig))
 
 ;;; SCATTER
