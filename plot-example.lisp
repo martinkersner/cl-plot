@@ -28,7 +28,7 @@
          :with "lines"
          )
 
-;(show    *fig*)
-(save *fig* "fig.png" 600 400)
+(show    *fig*)
+;(save *fig* "fig.png" 600 400)
 ;(save *fig* "fig.png")
 ;(save *fig* "fig.png" 666)
