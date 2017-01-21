@@ -32,10 +32,10 @@
    (commands :accessor get-commands
              :initform (list ""))
    (stream :accessor get-stream)
+   (cmd-filename :accessor get-cmd-filename)
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
 
-;;; PRIVATE METHODS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun open-file-to-write ()
   (let* ((filename (get-random-filename))
          (stream (open filename
@@ -45,31 +45,44 @@
 
     (values filename stream)))
 
+(defgeneric initialize-plotting (fig)
+  (:documentation ""))
+
+(defmethod initialize-plotting ((fig figure))
+  (write-line "cat << EOF | gnuplot -p" (get-stream fig)))
+
+(defgeneric do-plotting (fig)
+  (:documentation ""))
+
+(defmethod do-plotting ((fig figure))
+  (build-commands (get-commands fig) (get-stream fig))
+  (write-line "EOF" (get-stream fig))
+  (close (get-stream fig))
+  (ext::shell (concatenate-strings (list (get-shell fig) (get-cmd-filename fig))))
+  (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
+  (delete-file (get-stream fig))
+)
+
 (defgeneric save (fig image-name width height)
   (:documentation "Save a plot as an image."))
 
 (defmethod save ((fig figure) image-name width height)
   (multiple-value-bind (filename stream) (open-file-to-write)
+    (setf (get-cmd-filename fig) filename)
+    (setf (get-stream fig) stream)
 
-    (write-line "cat << EOF | gnuplot -p" stream)
+    (initialize-plotting fig)
 
     (write-line
-      (concatenate-strings (list "set term png size"
+      (concatenate-strings (list "set term png size" ; TODO change term according to image extension
                                  (concatenate-strings (list width height) ",")))
       stream)
 
     (write-line
-      (concatenate-strings (list "set output \"" image-name "\""))
+      (concatenate-strings (list "set output \"" image-name "\"") "")
       stream)
 
-    (build-commands (get-commands fig) stream)
-
-    (write-line "EOF" stream)
-    (close stream)
-    (ext::shell (concatenate-strings (list (get-shell fig) filename)))
-    (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
-    (delete-file stream)
-    )
+    (do-plotting fig))
 )
 
 (defun build-commands (commands stream)
