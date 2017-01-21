@@ -25,8 +25,6 @@
           :initarg :nokey)
    (palette :accessor get-palette
             :initarg :palette)
-   (circles :accessor set-circles) ;TODO
-   (points :accessor set-points) ;TODO
    (commands :accessor get-commands
              :initform (list ""))
    (stream :accessor get-stream)
@@ -40,6 +38,17 @@
    (temporary-files :accessor get-temporary-files
                     :initform nil)))
 
+(defmethod initialize-instance :after ((fig figure) &rest args)
+  (setup-file-stream fig)
+  (write-line "cat << EOF | gnuplot -p" (get-stream fig))
+
+  (if (get-nokey fig)
+    (gen-nokey fig))
+
+  (if (get-palette fig)
+    (gen-palette-fig fig))
+  )
+
 (defgeneric setup-file-stream (fig)
   (:documentation ""))
 
@@ -52,20 +61,6 @@
               :direction :output
               :if-exists :overwrite
               :if-does-not-exist :create)))
-
-(defgeneric initialize-plotting (fig)
-  (:documentation ""))
-
-(defmethod initialize-plotting ((fig figure))
-  (setup-file-stream fig)
-  (write-line "cat << EOF | gnuplot -p" (get-stream fig))
-
-  (if (get-nokey fig)
-    (write-line (gen-nokey fig) (get-stream fig)))
-
-  (if (get-palette fig)
-    (write-line (gen-palette-fig fig) (get-stream fig)))
-  )
 
 (defgeneric do-plotting (fig)
   (:documentation ""))
@@ -81,7 +76,8 @@
   (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
 
   ;; remove temporary command file
-  (delete-file (get-stream fig))
+  ;(delete-file (get-stream fig))
+  (princ (get-cmd-filename fig))
 )
 
 (defgeneric save (fig image-name &optional width height)
@@ -90,8 +86,6 @@
 (defmethod save ((fig figure) image-name &optional width height)
   (let ((w (if width width (get-width fig)))
         (h (if height height (get-height fig))))
-
-    (initialize-plotting fig)
 
     (write-line
       (concatenate-strings (list "set term png size" ; TODO change term according to image extension
@@ -119,7 +113,6 @@
   (:documentation "Display plot."))
 
 (defmethod show ((fig figure))
-  (initialize-plotting fig)
   (do-plotting fig))
 
 ;;; SCATTER
@@ -219,21 +212,21 @@
 ;;; SCATTER TYPE: PLOT, REPLOT
 ;;; TODO sufficient?
 (defun gen-scatter-type (scatter-type)
-  (concatenate-strings (list *space* (to-str scatter-type) *space*)))
+  (concatenate-strings (list (to-str scatter-type) *space*)))
 
 ;;; GEN-NOKEY for FIGURE
 (defgeneric gen-nokey (fig)
   (:documentation "Block legend."))
 
 (defmethod gen-nokey ((fig figure))
-  "set nokey")
+  (add-command fig "set nokey"))
 
 ;;; PALETTE for FIGURE
 (defgeneric gen-palette-fig (fig)
   (:documentation "Show palette on plot."))
 
 (defmethod gen-palette-fig ((fig figure))
-  "show palette")
+  (add-command fig "show palette"))
 
 ;;; FIGURE-RANGE
 ;;; General method for setting range of axis.
@@ -269,7 +262,7 @@
 (defgeneric figure-label (fig axis label)
   (:documentation "Print label of given axis."))
 
-(defmethod figure-label (fig axis label)
+(defmethod figure-label ((fig figure) axis label)
   (add-command fig
                "set" *space* (to-str axis) "label" *space* (quote-string label)))
 
