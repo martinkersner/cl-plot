@@ -76,7 +76,8 @@
   (mapcar #'(lambda (tmp-file) (delete-file tmp-file)) (get-temporary-files fig))
 
   ;; remove temporary command file
-  (delete-file (get-stream fig))
+  ;(delete-file (get-stream fig))
+  (princ (get-cmd-filename fig))
 )
 
 (defgeneric save (fig image-name &optional width height)
@@ -86,14 +87,12 @@
   (let ((w (if width width (get-width fig)))
         (h (if height height (get-height fig))))
 
-    (write-line
+    (prepend-command fig
       (concatenate-strings (list "set term png size" ; TODO change term according to image extension
-                                 (concatenate-strings (list w h) ",")))
-      (get-stream fig))
+                                 (concatenate-strings (list w h) ","))))
 
-    (write-line
-      (concatenate-strings (list "set output \"" image-name "\"") "")
-      (get-stream fig))
+    (prepend-command fig
+      (concatenate-strings (list "set output \"" image-name "\"") ""))
 
     (do-plotting fig)))
 
@@ -198,6 +197,15 @@
   (figure-range fig 'y range))
 
 ;;; PRIVATE METHODS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgeneric prepend-command (fig &rest cmd)
+  (:documentation ""))
+
+(defmethod prepend-command ((fig figure) &rest cmd)
+  (setf (get-commands fig)
+        (append
+          (list (concatenate-strings cmd ""))
+          (get-commands fig))))
 
 ;;; ADD-COMMAND
 (defgeneric add-command (fig &rest cmd)
