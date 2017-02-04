@@ -8,8 +8,6 @@
 ;;; check with GNU plot documentation
 ;;; 3D scatterplot
 
-(in-package :lispplot)
-
 (defparameter *space* " ")
 (defparameter *empty* "")
 
@@ -22,9 +20,11 @@
    (ps    :accessor get-ps
           :initform 2)
    (nokey :accessor get-nokey
-          :initarg :nokey)
+          :initarg :nokey
+          :initform nil)
    (palette :accessor get-palette
-            :initarg :palette)
+            :initarg :palette
+            :initform nil)
    (commands :accessor get-commands
              :initform (list ""))
    (stream :accessor get-stream)

@@ -3,8 +3,6 @@
 ;;;;
 ;;;; Example of plotting data using GNU plot.
 
-(in-package :lispplot)
-
 (defparameter *dataframe* 
   '((1  1)
     (1  3)

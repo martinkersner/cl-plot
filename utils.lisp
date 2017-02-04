@@ -3,8 +3,6 @@
 ;;;;
 ;;;; Auxiliary functions for plotting.
 
-(in-package :lispplot)
-
 ;;; Concatenate string given in list and join them with given delimiter.
 (defun concatenate-strings (str-lst &optional  (delim " ") (complete ""))
   (let* ((item-tmp (car str-lst))
