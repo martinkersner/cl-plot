@@ -3,6 +3,11 @@ Plotting library for Common Lisp utilizing [gnuplot](http://www.gnuplot.info/).
 
 Martin Kersner, <m.kersner@gmail.com>, 2017
 
+1. [Info](https://github.com/martinkersner/cl-plot#info)
+2. [Getting started](https://github.com/martinkersner/cl-plot#getting-started)
+3. [Documentation](https://github.com/martinkersner/cl-plot#documentation)
+4. [Examples](https://github.com/martinkersner/cl-plot#examples)
+
 ## Info
 *cl-plot* was developed for Common Lisp Machine Learning library [cl-ml](https://github.com/martinkersner/cl-ml.git). Input data should follow rules of matrix data structure introduced in Common Lisp Mathematical library [cl-math](https://github.com/martinkersner/cl-math.git).
 
@@ -71,7 +76,7 @@ After `show` command is executed, plot is displayed with gnuplot window which le
 ## Examples
 There are several more examples within *examples* directory.
 
-Following example explains how to visualize a scatter plot data, give a name to a plot, x and y-axis. Eventually, it shows a generated plot.
+Following section explains how to create a scatter plot figure, give it a title and label both x and y axes of plot. Eventually, it shows a generated plot.
 
 ### Basic example (with explanation)
 First, create matrix with data to plot.
