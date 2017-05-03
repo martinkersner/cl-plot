@@ -21,7 +21,7 @@
           :initform 2)
    (nokey :accessor get-nokey
           :initarg :nokey
-          :initform nil)
+          :initform t)
    (palette :accessor get-palette
             :initarg :palette
             :initform nil)
